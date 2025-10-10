@@ -49,7 +49,7 @@ if [[ -n "$VLAN_LIST" ]]; then
     GW_IP="${GW_BASE}${VID}.0.1/24"
     echo "[OFS] Creando interfaz GW $IF_VLAN para VLAN $VID con IP $GW_IP ..."
     # Creamos una interfaz interna de OVS para esa VLAN
-    ovs-vsctl --may-exist add-port "$OVS_NAME" "$IF_VLAN" tag="$VID" -- set Interface "$IF_VLAN" type=internal
+    ovs-vsctl --may-exist add-port "$OVS_NAME" "$IF_VLAN" tag=$VID -- set Interface "$IF_VLAN" type=internal
     ip link set "$IF_VLAN" up
     ip addr flush dev "$IF_VLAN" || true
     ip addr add "$GW_IP" dev "$IF_VLAN"
@@ -69,3 +69,4 @@ if [[ -n "$UPLINK_IF" ]]; then
 fi
 
 echo "[OFS] Inicialización completada para $OVS_NAME"
+
