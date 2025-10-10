@@ -34,12 +34,13 @@ fi
 ip link set "$VETH_NS" netns "$NS"
 ip link set "$VETH_HOST" up
 ip netns exec "$NS" ip addr flush dev "$VETH_NS" || true
-ip netns exec "$NS" ip addr add "$GW/24" dev "$VETH_NS"
+MASK=$(echo "$CIDR" | cut -d'/' -f2)
+ip netns exec "$NS" ip addr add "$GW/$MASK" dev "$VETH_NS"
 ip netns exec "$NS" ip link set "$VETH_NS" up
 ip netns exec "$NS" ip link set lo up
 
 # Añadir extremo host al OVS con tag VLAN
-ovs-vsctl --may-exist add-port "$OVS" "$VETH_HOST" tag="$VID"
+ovs-vsctl --may-exist add-port "$OVS" "$VETH_HOST" tag=$VID
 
 # Levantar dnsmasq dentro del namespace (DHCP para la VLAN)
 # Paramos instancia previa (si existiera)
